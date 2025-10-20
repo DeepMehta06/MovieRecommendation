@@ -20,12 +20,12 @@
     <meta property="og:title" content="Movie Recommendation System">
     <meta property="og:description" content="This page is a Movie Recommendation System created by Praveen Kumar, an AI Engineer & Software Developer based in Bangalore. Search for movies using the autocomplete input field, and get great movie suggestions.">
 
-    <link rel="shortcut icon" href="{% static 'logo.png' %}">
+    <link rel="shortcut icon" href="{% static 'images/logo.png' %}">
 
     <title>Movie Recommendation System</title>
-    <link rel="stylesheet" href="{% static 'recommender/cursor.css' %}" type="text/css">
-    <link rel="stylesheet" href="{% static 'recommender/resultpage.css' %}" type="text/css">
-    <link rel="stylesheet" href="{% static 'recommender/resultnavbar.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'recommender/css/cursor.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'recommender/css/resultpage.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'recommender/css/resultnavbar.css' %}" type="text/css">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/iconfont/tabler-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
@@ -42,7 +42,7 @@
 
     <div class="cursor-dot-outline"></div>
     <div class="cursor-dot"></div>
-    <script src="{% static 'recommender/cursor.js' %}"></script>
+    <script src="{% static 'recommender/js/cursor.js' %}"></script>
 
     <input class="menu-icon" type="checkbox" id="menu-icon" name="menu-icon" />
     <label for="menu-icon"></label>
@@ -57,26 +57,50 @@
     </nav>
 
     <video autoplay muted loop id="myVideo">
-        <source src="{% static 'production ID_4779866.mp4' %}" type="video/mp4">
+        <source src="{% static 'videos/production ID_4779866.mp4' %}" type="video/mp4">
     </video>
     <script>
         var vid = document.getElementById("myVideo");
         vid.playbackRate = 0.25;
     </script>
 
-    <div class="title-container">
-        <h3>Movies like: {{ input_movie_name }}</h3>
-    </div>
+    {% comment %} <div class="title-container">
+        <h3>Top 25 Movies Similar to: {{ input_movie_name }}</h3>
+    </div> {% endcomment %}
 
     <div class="main-container">
         {% if recomendation_found %}
+            {% if search_message %}
+                <div class="search-message">{{ search_message }}</div>
+            {% endif %}
             {% if recomendation_found %}
                 {% for each_movie_dictionary in recommended_movies %}
                     <div class="card-container">
-                        <h2 class="card-header"><i class="fa fa-film"></i> {{ each_movie_dictionary.movie_title }}</h2>
-                        <p class="card-para">Directed By: {{ each_movie_dictionary.movie_director }}</p>
-                        <p class="card-para">Release Date: {{ each_movie_dictionary.movie_release_date }}</p>
-                        <a target="_blank" href="{{ each_movie_dictionary.google_link }}" class="card-link">Google Search <i class="fa fa-arrow-circle-o-right"></i></a>
+                        <!-- Movie Poster -->
+                        <div class="poster-container">
+                            <img src="{{ each_movie_dictionary.poster_url }}" 
+                                 alt="{{ each_movie_dictionary.title }} Poster" 
+                                 class="movie-poster"
+                                 onerror="this.src='https://via.placeholder.com/200x300/1a1a1a/ffffff?text=No+Poster'">
+                        </div>
+                        
+                        <!-- Movie Details -->
+                        <div class="details-container">
+                            <h2 class="card-header">
+                                <i class="fa fa-film"></i> {{ each_movie_dictionary.title }}
+                                {% if each_movie_dictionary.release_year != 'N/A' %}
+                                    <span class="release-year">({{ each_movie_dictionary.release_year }})</span>
+                                {% endif %}
+                            </h2>
+                            <p class="card-para"><strong>🎬 Director:</strong> {{ each_movie_dictionary.director }}</p>
+                            {% if each_movie_dictionary.cast != 'N/A' %}
+                                <p class="card-para"><strong>🎭 Cast:</strong> {{ each_movie_dictionary.cast }}</p>
+                            {% endif %}
+                            <p class="card-para"><strong>📅 Release Date:</strong> {{ each_movie_dictionary.release_date }}</p>
+                            <p class="card-para"><strong>⭐ Rating:</strong> {{ each_movie_dictionary.rating }}</p>
+                            <p class="card-overview">{{ each_movie_dictionary.overview }}</p>
+                            <a target="_blank" href="{{ each_movie_dictionary.google_search }}" class="card-link">Google Search <i class="fa fa-arrow-circle-o-right"></i></a>
+                        </div>
                     </div>
                 {% endfor %} 
             {% endif %}

@@ -107,13 +107,13 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# For production - where collectstatic puts files
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-STATICFILES_DIRS = (
-  # Put strings here, like "/home/html/static" or "C:/www/django/static".
-  # Always use forward slashes, even on Windows.
-  # Don't forget to use absolute paths, not relative paths.
-)
+# For development - where Django finds static files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 # Following settings only make sense on production and may break development environments.
 if not DEBUG:    # Tell Django to copy statics to the `staticfiles` directory
@@ -126,3 +126,7 @@ if not DEBUG:    # Tell Django to copy statics to the `staticfiles` directory
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# OMDB API Configuration
+# Get your free API key from: http://www.omdbapi.com/apikey.aspx
+OMDB_API_KEY = '8fadb753'  # OMDB API key

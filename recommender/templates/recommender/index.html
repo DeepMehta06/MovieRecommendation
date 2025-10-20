@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -22,7 +21,7 @@
     <meta property="og:image" content="https://github.com/inboxpraveen/inboxpraveen.github.io/blob/master/assets/img/hero_3.png">
     <meta property="og:url" content="https://inboxpraveen.github.io/">
 
-    <link rel="shortcut icon" href="{% static 'logo.png' %}">
+    <link rel="shortcut icon" href="{% static 'images/logo.png' %}">
 
     <title>Movie Recommendation System</title>
 
@@ -35,9 +34,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 
-    <link rel="stylesheet" href="{% static 'recommender/cursor.css' %}" type="text/css">
-    <link rel="stylesheet" href="{% static 'recommender/page.css' %}" type="text/css">
-    <link rel="stylesheet" href="{% static 'recommender/navbar.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'recommender/css/cursor.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'recommender/css/page.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'recommender/css/navbar.css' %}" type="text/css">
 
 </head>
 
@@ -45,7 +44,7 @@
 
     <div class="cursor-dot-outline"></div>
     <div class="cursor-dot"></div>
-    <script src="{% static 'recommender/cursor.js' %}"></script>
+    <script src="{% static 'recommender/js/cursor.js' %}"></script>
 
     <input class="menu-icon" type="checkbox" id="menu-icon" name="menu-icon" />
     <label for="menu-icon"></label>
@@ -59,7 +58,7 @@
     </nav>
 
     <video autoplay muted loop id="myVideo">
-        <source src="{% static 'production ID_4779866.mp4' %}" type="video/mp4">
+        <source src="{% static 'videos/production ID_4779866.mp4' %}" type="video/mp4">
     </video>
     <script>
         var vid = document.getElementById("myVideo");
@@ -73,8 +72,15 @@
             <form method="POST">    
                 {% csrf_token %}
                 <div class="formcontainer">
-                    <input class="input-field" type="text" id="movie_name" name="movie_name"
-                        placeholder="Start typing to see movie suggestions..." required />
+                    <div class="search-wrapper">
+                        <select name="search_type" class="search-type-selector">
+                            <option value="movie" selected>Movie</option>
+                            <option value="actor">Actor</option>
+                            <option value="director">Director</option>
+                        </select>
+                        <input class="input-field" type="text" id="movie_name" name="movie_name"
+                            placeholder="Search by Movie, Actor, or Director..." required />
+                    </div>
                     <script>
                         $(function () {
                             var availableTags = [
@@ -94,11 +100,21 @@
             <p class="message">
                 {% if input_provided %}
                     <div>
-                        {% if not movie_found %}
+                        {% if movie_found == 'no' %}
+                            <p class="message__result">You Searched For: <b>{{ input_movie_name }}</b></p>
+                            <p class="message__p1">🤔 Movie not found! Did you mean:</p>
+                            <div style="margin-top: 15px; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px;">
+                                {% for suggestion in suggestions %}
+                                    <p style="margin: 8px 0; color: #fff; font-size: 16px;">
+                                        • <b>{{ suggestion }}</b>
+                                    </p>
+                                {% endfor %}
+                            </div>
+                        {% elif not movie_found %}
                             <p class="message__result">You Searched For: <b>{{ input_movie_name }}</b></p>
                             {% if not recomendation_found %}
                                 <p class="message__p1">Oops! We can not match your movie in our database.</p>
-                                <p class="message__p2">As this is a demo model, only top 2.5K movies based on IMBD are present.</p>
+                                <p class="message__p2">Please try a different movie name or check the spelling.</p>
                             {% endif %}
                         {% endif %}
                     </div>
@@ -116,6 +132,11 @@
             </span>
         </div>
 
+    </div>
+
+    <div style="position: fixed; bottom: 10px; left: 10px; padding: 10px; background: rgba(0,0,0,0.7); color: white; border-radius: 5px; font-size: 12px;">
+        <img src="{% static 'images/logo.png' %}" alt="Logo" style="height: 30px; vertical-align: middle; margin-right: 10px;">
+        Movie Recommendation System
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/TweenMax.min.js"></script>

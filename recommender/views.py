@@ -1,101 +1,106 @@
+"""
+Views for the movie recommendation system
+Clean and organized using utility modules
+"""
+
 from django.shortcuts import render
-import pandas as pd
-import pyarrow as pa
+from .utils import get_data_loader, RecommendationEngine
 
-movies_data = pd.read_parquet("static/top_2k_movie_data.parquet")
-titles = movies_data['title']
-titles_list = titles.to_list()
+# Initialize data loader (singleton pattern)
+data_loader = get_data_loader()
 
-def get_recommendations(movie_id_from_db,movie_db):
+# Get loaded data
+movies_data = data_loader.get_movies_data()
+similarity_matrix = data_loader.get_similarity_matrix()
+titles_list = data_loader.get_titles_list()
 
-    try:
-        sim_scores = list(enumerate(movie_db[movie_id_from_db]))
-        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-        sim_scores = sim_scores[1:15] ## get top 15 Recommendations
-        
-        movie_indices = [i[0] for i in sim_scores]
-        output = movies_data.iloc[movie_indices]
-        output.reset_index(inplace=True, drop=True)
-
-        response = []
-        for i in range(len(output)):
-            response.append({
-                'movie_title':output['title'].iloc[i],
-                'movie_release_date':output['release_date'].iloc[i],
-                'movie_director':output['main_director'].iloc[i],
-                'google_link':"https://www.google.com/search?q=" + '+'.join(output['title'].iloc[i].strip().split()) + " (" + output['release_date'].iloc[i].split("-")[0]+")"
-            })
-        return response
-    except Exception as e:
-        print("error: ",e)
-        return []
-
+# Initialize recommendation engine
+recommender = RecommendationEngine(movies_data, similarity_matrix, data_loader)
 
 def main(request):
-
-    global titles_list, model
+    """
+    Main view for movie recommendation
+    
+    Handles both GET (display form) and POST (get recommendations) requests
+    """
+    global titles_list
 
     if request.method == 'GET':
         return render(
                 request,
                 'recommender/index.html',
                 {
-                    'all_movie_names':titles_list,
-                    'input_provided':'',
-                    'movie_found':'',
-                    'recomendation_found':'',
-                    'recommended_movies':[],
-                    'input_movie_name':''
+                    'all_movie_names': titles_list,
+                    'input_provided': '',
+                    'movie_found': '',
+                    'recomendation_found': '',
+                    'recommended_movies': [],
+                    'suggestions': [],
+                    'input_movie_name': ''
                 }
             )
 
     if request.method == 'POST':
-
         data = request.POST
-        movie_name = data.get('movie_name') ## get movie name from the frontend input field
+        movie_name = data.get('movie_name')
 
-        if movie_name in titles_list:
-            idx = titles_list.index(movie_name)
-        else:
-            return render(
-                request,
-                'recommender/index.html',
-                {
-                    'all_movie_names':titles_list,
-                    'input_provided':'yes',
-                    'movie_found':'',
-                    'recomendation_found':'',
-                    'recommended_movies':[],
-                    'input_movie_name':movie_name
-                }
-            )
-
-        model = pa.parquet.read_table('static/demo_model.parquet').to_pandas()
-        final_recommendations = get_recommendations(idx,model)
-        if final_recommendations:
+        # Get recommendations using the recommendation engine
+        recommendations, suggestions, search_type = recommender.get_recommendations(movie_name, k=25)
+        
+        # Determine search type message
+        search_message = ''
+        if search_type == 'actor':
+            search_message = f'Movies featuring {movie_name}'
+        elif search_type == 'director':
+            search_message = f'Movies directed by {movie_name}'
+        elif search_type == 'movie':
+            search_message = f'Movies similar to {movie_name}'
+        
+        if recommendations:
+            # Movie found - show recommendations
             return render(
                 request,
                 'recommender/result.html',
                 {
-                    'all_movie_names':titles_list,
-                    'input_provided':'yes',
-                    'movie_found':'yes',
-                    'recomendation_found':'yes',
-                    'recommended_movies':final_recommendations,
-                    'input_movie_name':movie_name
+                    'all_movie_names': titles_list,
+                    'input_provided': 'yes',
+                    'movie_found': 'yes',
+                    'recomendation_found': 'yes',
+                    'recommended_movies': recommendations,
+                    'suggestions': [],
+                    'input_movie_name': movie_name,
+                    'search_type': search_type,
+                    'search_message': search_message
                 }
             )
-        else:
+        elif suggestions:
+            # Movie not found but similar suggestions available
             return render(
                 request,
                 'recommender/index.html',
                 {
-                    'all_movie_names':titles_list,
-                    'input_provided':'yes',
-                    'movie_found':'',
-                    'recomendation_found':'',
-                    'recommended_movies':[],
-                    'input_movie_name':movie_name
+                    'all_movie_names': titles_list,
+                    'input_provided': 'yes',
+                    'movie_found': 'no',
+                    'recomendation_found': '',
+                    'recommended_movies': [],
+                    'suggestions': suggestions,
+                    'input_movie_name': movie_name
+                }
+            )
+        else:
+            # No movie found and no suggestions
+            return render(
+                request,
+                'recommender/index.html',
+                {
+                    'all_movie_names': titles_list,
+                    'input_provided': 'yes',
+                    'movie_found': '',
+                    'recomendation_found': '',
+                    'recommended_movies': [],
+                    'suggestions': [],
+                    'input_movie_name': movie_name
                 }
             )
 

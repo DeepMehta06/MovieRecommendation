@@ -13,6 +13,7 @@ body {
     opacity: 1;
     overflow-x: hidden;
     z-index: 100;
+    cursor: none;
 }
 
 a {
@@ -92,33 +93,75 @@ a {
     align-items: center;
 }
 
-.formcontainer input {
-    width: 70%;
-    margin: 0rem 0.75rem;
-    padding: 0.5rem;
-    background-color: rgba(255, 255, 255, 0.5);
-    border-radius: 1%;
-    color: black;
-    border-color: black;
-    border-width: 2px;
+.search-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
-.formcontainer input:hover {
+.search-type-selector {
+    padding: 0.5rem 1rem;
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 2px solid black;
+    border-radius: 5px;
+    color: black;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.search-type-selector:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+}
+
+.search-type-selector:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.input-field {
+    width: 50%;
+    min-width: 300px;
+    padding: 0.5rem 1rem;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
+    color: black;
+    border: 2px solid black;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.input-field:hover {
     background-color: rgba(255, 255, 255, 0.9);
 }
 
-.formcontainer button {
+.input-field:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.submit-button {
     margin: 0.5rem 0rem;
-    padding: 0.5rem;
+    padding: 0.6rem 2rem;
     background-color: rgba(255, 255, 255, 0.5);
     color: black;
-    border-radius: 5%;
-    border-color: black;
-    border-width: 2px;
+    border-radius: 8px;
+    border: 2px solid black;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.formcontainer button:hover {
+.submit-button:hover {
     background-color: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 
