@@ -32,6 +32,9 @@
     <link rel="Stylesheet" href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css'>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
@@ -87,19 +90,33 @@
                         <!-- Movie Details -->
                         <div class="details-container">
                             <h2 class="card-header">
-                                <i class="fa fa-film"></i> {{ each_movie_dictionary.title }}
+                                <i data-lucide="film" class="header-icon"></i> {{ each_movie_dictionary.title }}
                                 {% if each_movie_dictionary.release_year != 'N/A' %}
                                     <span class="release-year">({{ each_movie_dictionary.release_year }})</span>
                                 {% endif %}
                             </h2>
-                            <p class="card-para"><strong>🎬 Director:</strong> {{ each_movie_dictionary.director }}</p>
+                            <p class="card-para">
+                                <i data-lucide="clapperboard" class="info-icon"></i>
+                                <strong>Director:</strong> {{ each_movie_dictionary.director }}
+                            </p>
                             {% if each_movie_dictionary.cast != 'N/A' %}
-                                <p class="card-para"><strong>🎭 Cast:</strong> {{ each_movie_dictionary.cast }}</p>
+                                <p class="card-para">
+                                    <i data-lucide="users" class="info-icon"></i>
+                                    <strong>Cast:</strong> {{ each_movie_dictionary.cast }}
+                                </p>
                             {% endif %}
-                            <p class="card-para"><strong>📅 Release Date:</strong> {{ each_movie_dictionary.release_date }}</p>
-                            <p class="card-para"><strong>⭐ Rating:</strong> {{ each_movie_dictionary.rating }}</p>
+                            <p class="card-para">
+                                <i data-lucide="calendar" class="info-icon"></i>
+                                <strong>Release Date:</strong> {{ each_movie_dictionary.release_date }}
+                            </p>
+                            <p class="card-para">
+                                <i data-lucide="star" class="info-icon"></i>
+                                <strong>Rating:</strong> {{ each_movie_dictionary.rating }}
+                            </p>
                             <p class="card-overview">{{ each_movie_dictionary.overview }}</p>
-                            <a target="_blank" href="{{ each_movie_dictionary.google_search }}" class="card-link">Google Search <i class="fa fa-arrow-circle-o-right"></i></a>
+                            <a target="_blank" href="{{ each_movie_dictionary.google_search }}" class="card-link">
+                                Google Search <i data-lucide="external-link" class="link-icon"></i>
+                            </a>
                         </div>
                     </div>
                 {% endfor %} 
@@ -116,6 +133,9 @@
             }
 
         window.addEventListener("scroll", changeCss , true);
+        
+        // Initialize Lucide Icons
+        lucide.createIcons();
     </script>
 </body>
 

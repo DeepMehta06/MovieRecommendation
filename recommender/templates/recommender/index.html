@@ -30,6 +30,9 @@
     <link rel="Stylesheet" href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css'>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
@@ -73,13 +76,21 @@
                 {% csrf_token %}
                 <div class="formcontainer">
                     <div class="search-wrapper">
-                        <select name="search_type" class="search-type-selector">
-                            <option value="movie" selected>Movie</option>
-                            <option value="actor">Actor</option>
-                            <option value="director">Director</option>
-                        </select>
-                        <input class="input-field" type="text" id="movie_name" name="movie_name"
-                            placeholder="Search by Movie, Actor, or Director..." required />
+                        <div class="custom-select-wrapper">
+                            <select name="search_type" class="search-type-selector" id="searchType">
+                                <option value="movie" selected data-icon="film">🎬 Movie</option>
+                                <option value="actor" data-icon="user">👤 Actor</option>
+                                <option value="director" data-icon="clapperboard">🎥 Director</option>
+                            </select>
+                            <div class="select-icon">
+                                <i data-lucide="chevron-down"></i>
+                            </div>
+                        </div>
+                        <div class="input-wrapper">
+                            <i data-lucide="search" class="input-icon"></i>
+                            <input class="input-field" type="text" id="movie_name" name="movie_name"
+                                placeholder="Search by Movie, Actor, or Director..." required />
+                        </div>
                     </div>
                     <script>
                         $(function () {
@@ -100,21 +111,32 @@
             <p class="message">
                 {% if input_provided %}
                     <div>
-                        {% if movie_found == 'no' %}
-                            <p class="message__result">You Searched For: <b>{{ input_movie_name }}</b></p>
-                            <p class="message__p1">🤔 Movie not found! Did you mean:</p>
-                            <div style="margin-top: 15px; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px;">
-                                {% for suggestion in suggestions %}
-                                    <p style="margin: 8px 0; color: #fff; font-size: 16px;">
-                                        • <b>{{ suggestion }}</b>
-                                    </p>
-                                {% endfor %}
+                        {% if error_message %}
+                            <div class="error-message-box">
+                                <i data-lucide="alert-circle" class="error-icon"></i>
+                                <p class="error-text">{{ error_message }}</p>
                             </div>
-                        {% elif not movie_found %}
+                        {% elif movie_found == 'no' %}
+                            <p class="message__result">You Searched For: <b>{{ input_movie_name }}</b></p>
+                            <div class="suggestions-box">
+                                <i data-lucide="lightbulb" class="suggestion-icon"></i>
+                                <p class="message__p1">Movie not found! Did you mean:</p>
+                                <div style="margin-top: 15px; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px;">
+                                    {% for suggestion in suggestions %}
+                                        <p style="margin: 8px 0; color: #fff; font-size: 16px;">
+                                            • <b>{{ suggestion }}</b>
+                                        </p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% elif not movie_found and not error_message %}
                             <p class="message__result">You Searched For: <b>{{ input_movie_name }}</b></p>
                             {% if not recomendation_found %}
-                                <p class="message__p1">Oops! We can not match your movie in our database.</p>
-                                <p class="message__p2">Please try a different movie name or check the spelling.</p>
+                                <div class="error-message-box">
+                                    <i data-lucide="search-x" class="error-icon"></i>
+                                    <p class="error-text">Oops! We cannot find that in our database.</p>
+                                    <p class="error-subtext">Please try a different search term or check the spelling.</p>
+                                </div>
                             {% endif %}
                         {% endif %}
                     </div>
@@ -140,6 +162,11 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/TweenMax.min.js"></script>
+    
+    <!-- Initialize Lucide Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
 
 </body>
 

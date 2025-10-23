@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: MovieRecommendation-Web
+    env: python
+    plan: free # or starter/standard depending on your needs
+    region: oregon # change as needed
+    branch: main
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: python manage.py migrate --noinput && gunicorn movie_recommendation.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: SECRET_KEY
+        value: "<your-secret-here>"
+      - key: DEBUG
+        value: "False"
+      - key: OMDB_API_KEY
+        value: "<your-omdb-key>"
+    # Optionally attach a managed Postgres database via the Render dashboard and
+    # set the DATABASE_URL environment variable on the service to the value Render provides.
+    # You can also include a `postgres` service here, but it's usually cleaner to add it
+    # from the Render dashboard and then set DATABASE_URL on the web service.
